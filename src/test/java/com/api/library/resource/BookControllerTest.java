@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.api.library.controller.BookController;
 import com.api.library.dto.BookDto;
 import com.api.library.model.entity.Book;
 import com.api.library.service.BookService;
@@ -36,7 +37,7 @@ import com.library.exception.BusinessException;
 //Teste de integração
 @ExtendWith(SpringExtension.class)//Cria um mini contexto para Rodar o teste
 @ActiveProfiles("test") //roda apenas no contexto de teste
-@WebMvcTest
+@WebMvcTest(controllers = BookController.class )
 @AutoConfigureMockMvc//configura objeto para fazer as requisições
 public class BookControllerTest {
 
