@@ -2,6 +2,10 @@ package com.api.library.service.impl;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import com.api.library.dto.LoanFilterDto;
 import com.api.library.model.entity.Loan;
 import com.api.library.model.entity.LoanRepository;
 import com.api.library.service.LoanService;
@@ -24,14 +28,20 @@ public class LoanServiceImpl implements LoanService {
 
 	@Override
 	public Optional<Loan> getById(Long id) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+		return  repository.findById(id);
 	}
 
 	@Override
-	public void update(Loan loan) {
-		// TODO Auto-generated method stub
-		
+	public Loan update(Loan loan) {
+		return repository.save(loan);
 	}
+
+	@Override
+	public Page<Loan> find(LoanFilterDto filterDto, Pageable pageRequest) {
+		
+		return repository.findByBookIsbnOrCustomer(filterDto.getIsbn(), filterDto.getCustomer(), pageRequest);
+	}
+
+
 
 }

@@ -1,9 +1,16 @@
 package com.api.library.controller;
 
+
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +20,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.api.library.dto.BookDto;
 import com.api.library.dto.LoanDto;
+import com.api.library.dto.LoanFilterDto;
 import com.api.library.dto.ReturnedLoanDto;
 import com.api.library.model.entity.Book;
 import com.api.library.model.entity.Loan;
@@ -56,5 +65,24 @@ public class LoanController {
 		loan.setReturned(dto.getReturned());
 		service.update(loan);
 	}
+	
+	 @GetMapping
+	    public Page<LoanDto> find(LoanFilterDto dto, Pageable pageRequest) {
+		  Page<Loan> result = service.find(dto, pageRequest);
+	        List<LoanDto> loans = result
+	                .getContent()
+	                .stream()
+	                .map(entity -> {
+
+	                    Book book = entity.getBook();
+	                    BookDto bookDTO = modelMapper.map(book, BookDto.class);
+	                    LoanDto loanDTO = modelMapper.map(entity, LoanDto.class);
+	                    loanDTO.setBook(bookDTO);
+	                    return loanDTO;
+
+	                }).collect(Collectors.toList());
+			
+			return new PageImpl<LoanDto>(loans,pageRequest,result.getTotalElements());
+	    }
 	
 }
