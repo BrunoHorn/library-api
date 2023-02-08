@@ -1,11 +1,13 @@
 package com.api.library.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.api.library.dto.LoanFilterDto;
+import com.api.library.model.entity.Book;
 import com.api.library.model.entity.Loan;
 
 public interface LoanService {
@@ -18,6 +20,8 @@ public interface LoanService {
 
 	Page<Loan> find(LoanFilterDto filterDto, Pageable pageRequest);
 
+	Page<Loan> getLoansByBook(Book book, Pageable pageable);
 
+	List<Loan> getAllLateLoans();
 
 }

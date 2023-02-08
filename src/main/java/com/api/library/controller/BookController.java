@@ -23,24 +23,27 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.api.library.dto.BookDto;
+import com.api.library.dto.LoanDto;
 import com.api.library.model.entity.Book;
+import com.api.library.model.entity.Loan;
 import com.api.library.service.BookService;
+import com.api.library.service.LoanService;
 
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/books")
+@RequiredArgsConstructor //cria um construtor quando uma dependencia está criada  com final
 public class BookController {
 
-	private ModelMapper modelMapper;
+	private final BookService service;
 	
-	@Autowired
-	private BookService service;
+	private final ModelMapper modelMapper;
 	
-	public BookController(ModelMapper modelMapper) {
-		this.service = service;
-		this.modelMapper = modelMapper;
-	}
+	private final LoanService loanService;
+	
+
 	
 	@PostMapping
 	@ResponseStatus(code = HttpStatus.CREATED)
@@ -90,7 +93,27 @@ public class BookController {
 		return new PageImpl<BookDto>(list, pageRequest, result.getTotalElements());
 	}
 	
-	
+	@GetMapping("{id}/loans")
+	public Page<LoanDto> loansByBook(@PathVariable Long id, Pageable pageable) {
+		Book book = service.getById(id).orElseThrow(() 
+				-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		
+		
+		Page<Loan> result = loanService.getLoansByBook(book, pageable);
+		
+		//Transforma lista de entity em lista de DTO
+		List<LoanDto> list = result.getContent()
+				   .stream()
+				   .map(loan -> {
+					   Book loanBook = loan.getBook();
+					   BookDto bookDto = modelMapper.map(loanBook, BookDto.class);
+					   LoanDto loanDto = modelMapper.map(loan, LoanDto.class);
+					   loanDto.setBook(bookDto);
+					   return loanDto;
+				   }).collect(Collectors.toList());
+		
+		return new PageImpl<LoanDto>(list, pageable, result.getTotalElements());
+	}
 	
 
 	

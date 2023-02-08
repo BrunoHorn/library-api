@@ -1,5 +1,7 @@
 package com.api.library.dto;
 
+import javax.validation.constraints.NotEmpty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +14,8 @@ import lombok.NoArgsConstructor;
 public class LoanDto {
 	
 	private Long id;
+	
+	@NotEmpty
 	private String isbn;
 	private String customer;
 	private String email;

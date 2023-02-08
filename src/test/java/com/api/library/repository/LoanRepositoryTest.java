@@ -3,6 +3,7 @@ package com.api.library.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,5 +71,22 @@ public class LoanRepositoryTest {
 		return loan;
 	}
 	
+	@Test
+	@DisplayName("Deve obter empréstimos cuja data emprestimo for menor ou igual a tres dias atrás e não retornados")
+	public void findByLoanDateLessThanAndNotReturned() {
+		Loan loan = createAndPersistLoan(LocalDate.now().minusDays(5));
+		
+		List<Loan> result = repository.findByLoanDateLessThanAndNotReturned(LocalDate.now().minusDays(4));
+		assertThat(result).hasSize(1).contains(loan);
+	}
+	
+	@Test
+	@DisplayName("Deve retornar vazio quando não houver empréstimos atrasados")
+	public void notFindByLoanDateLessThanAndNotReturned() {
+		createAndPersistLoan(LocalDate.now());
+		
+		List<Loan> result = repository.findByLoanDateLessThanAndNotReturned(LocalDate.now().minusDays(4));
+		assertThat(result).isEmpty();
+	}
 	
 }
